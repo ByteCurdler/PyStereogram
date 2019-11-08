@@ -1,0 +1,11 @@
+
+Input/Me.jpg
+ComingSoon.png
+BaseAuto.*
+Output/Balls.png
+Output/Me.jpg
+Output/Python.png
+trueDepth.png
+.old/*
+.xcf/*
+__pycache__/*
