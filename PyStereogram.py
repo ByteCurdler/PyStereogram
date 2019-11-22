@@ -42,15 +42,7 @@ for x in range(len(diffmap)-1,-1,-1):
         tmp = depth[y][x][0]
         if x < len(diffmap) - ((TILESIZE) + int(tmp)):
             tmp += diffmap[x+(TILESIZE)+int(tmp)][y]
-##        if tmp == 18:
-##            print(depth[y][x][0])
-##            if x < len(diffmap) - (TILESIZE*2):
-##                print(diffmap[x+(TILESIZE*2)][y])
         diffmap[x][y] = int(tmp)
-##        if tmp == 14:
-##            print(14, "y", "y")
-##            print(depth[y][x][0])
-##            print(diffmap[x][y])
 
 print("Creating images...")
 for x in range(len(diffmap)-1,-1,-1):
