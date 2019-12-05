@@ -1,9 +1,11 @@
+#Imports
 from PIL import Image
 import numpy as np
 import sys
 
 TILESIZE=50
 
+#Get input
 depthImName = sys.argv[1:2]
 if depthImName == []:
     depthImName = input("Depthmap? ")
@@ -11,6 +13,7 @@ if depthImName == []:
 else:
     depthImName = depthImName[0]
 
+#Open depthmap
 try:
     depth = np.array(Image.open(depthImName))
 except FileNotFoundError:
@@ -24,12 +27,10 @@ print("Opening images...")
 base = np.array(Image.open("BaseAuto.png"))
 assert base.shape[:2] == depth.shape[:2], "Base and depthmap differ in size."
 
-
-
 print("Creating arrays...")
 depth -= depth.min()
 depth = depth * ((TILESIZE / 3) / depth.max())
-depth = (depth * -1) + (depth.max())
+#depth = (depth * -1) + (depth.max())
 diffmap = []
 newImage = []
 for i in range(base.shape[1]):
@@ -41,20 +42,24 @@ for x in range(len(diffmap)-1,-1,-1):
     for y in range(len(diffmap[0])):
         tmp = depth[y][x][0]
         if x < len(diffmap) - ((TILESIZE) + int(tmp)):
-            tmp += diffmap[x+(TILESIZE)+int(tmp)][y]
+            tmp += diffmap[x+(TILESIZE)-int(tmp)][y]
         diffmap[x][y] = int(tmp)
 
 print("Creating images...")
 for x in range(len(diffmap)-1,-1,-1):
     for y in range(len(diffmap[0])):
-        newImage[x][y] = tuple(base[y][(x+diffmap[x][y]) % base.shape[1]])
+        newImage[x][y] = tuple(base[y][(x-diffmap[x][y]) % base.shape[1]])
 
 def bound(n):
-    return ((n + (TILESIZE/2)) % TILESIZE) - (TILESIZE/2)
+    return int(
+        (
+            ((n + (TILESIZE/2)) % TILESIZE) - (TILESIZE/2)
+        ) * 255/TILESIZE
+    )
 
 difflist = []
 for i in range(len(diffmap[0])):
-    difflist += [(-diffmap[j][i], diffmap[j][i], 0) for j in range(len(diffmap))]
+    difflist += [(-bound(diffmap[j][i]), bound(diffmap[j][i]), 0) for j in range(len(diffmap))]
 
 img = Image.new('RGB', (len(diffmap), len(diffmap[0])))
 img.putdata(difflist)
@@ -67,6 +72,6 @@ for i in range(len(diffmap[0])):
 
 img = Image.new('RGB', (len(diffmap), len(diffmap[0])))
 img.putdata(im)
-img.save('Output/%s' % depthImName)
+img.save('Output/%s' % depthImName.split("/")[-1])
 
 print("Done!")

@@ -1,9 +1,11 @@
+#Imports
 from PIL import Image
 from random import randint
 
 def main(tilesize, imsize):
     dots = []
 
+    #Generate randomized tile image
     for i in range(tilesize*tilesize):
         if randint(0,1):
             dots.append(
@@ -20,19 +22,22 @@ def main(tilesize, imsize):
     tile = Image.new('RGB', (tilesize,tilesize))
     tile.putdata(dots)                 
 
+    #Tile image on new image
     img = Image.new('RGB', imsize)
     for x in range(0, imsize[0], tilesize):
         for y in range(0, imsize[1], tilesize):
     ##        print(left, top)
             img.paste(tile, (x, y))
 
+    #Create focusing squares
     dot = Image.new('RGB', (10,10))
     dot.putdata([(255,0,0)] * 100) 
     
     for x in range(20, imsize[0], tilesize):
         img.paste(dot, (x, 10))
         img.paste(dot, (x, imsize[1]-20))
-    
+
+    #Save base image
     img.save('BaseAuto.png')
     tile.save('BaseAuto.tile.png')
 
